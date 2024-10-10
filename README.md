@@ -1,46 +1,58 @@
-# Getting Started with Create React App
+# Anonymous File Storage Web App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This web app allows users to securely store, manage, and share files using only a 12-digit string for login. No personal information is required, ensuring complete anonymity.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+### 1. User Authentication (12-Digit String)
 
-### `npm start`
+- Users log in with a unique 12-digit string.
+- No email or personal information is collected.
+- CAPTCHA and rate limiting prevent brute-force attacks.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### 2. Data Encryption and Compression
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- All files are encrypted (AES-256) before storage.
+- Files are compressed (ZIP/GZIP) to save space.
+- Secure cloud storage for encrypted files.
 
-### `npm test`
+### 3. Anonymous File Storage & Retrieval
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Files are mapped to the user’s 12-digit string.
+- After login, users can view a list of file titles.
 
-### `npm run build`
+### 4. File Preview and Download
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- Users can preview supported file types (e.g., PDFs, images).
+- Download decrypted and decompressed files securely.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 5. File Sharing (Public/Private Links)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- Public links: Share files with anyone via a random link.
+- Private links: Require additional decryption or string for access.
+- Optional: Set expiration times or limits on shared links.
 
-### `npm run eject`
+### 6. Security Considerations
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+- Encryption keys derived from the 12-digit string (not stored).
+- Rate limiting to protect against brute-force attacks.
+- Users are responsible for their string (no recovery options).
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 7. Tech Stack Suggestions
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+- **Frontend**: React, Vue.js, or Angular.
+- **Backend**: Node.js (Express) or Python (Flask/Django).
+- **Database**: NoSQL (MongoDB).
+- **File Storage**: AWS S3, Google Cloud Storage.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### 8. User Experience
 
-## Learn More
+- Simple login with the 12-digit string.
+- Drag-and-drop file upload, easy previews, and downloads.
+- Intuitive file sharing and management interface.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### 9. Privacy and Legal Considerations
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- No personal data stored.
+- Users manage their access keys.
+- Ensure compliance with GDPR and data protection laws.
