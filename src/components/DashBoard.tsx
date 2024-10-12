@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import FileTable from "./FileTable";
+import PreviewModal from "./PreviewModal";
 
 type File = {
   id: string;
@@ -9,23 +11,34 @@ type File = {
 
 export default function Dashboard() {
   const [files, setFiles] = useState<File[]>([]);
+  const [previewFile, setPreviewFile] = useState<File | null>(null);
 
   useEffect(() => {
-    const accessKey = localStorage.getItem("accessKey");
-
     setFiles([
       {
         id: "1",
         name: "Document1.docx",
-        type: "Word Document",
+        type: "Document",
         size: "2.3 MB",
       },
-      { id: "2", name: "Image1.jpg", type: "Image", size: "1.5 MB" },
+      { id: "2", name: "image123.jpg", type: "Image", size: "1.5 MB" },
       {
         id: "3",
         name: "Spreadsheet1.xlsx",
-        type: "Excel Spreadsheet",
+        type: "Spreadsheet",
         size: "500 KB",
+      },
+      {
+        id: "4",
+        name: "sample.pdf",
+        type: "PDF",
+        size: "1 MB",
+      },
+      {
+        id: "5",
+        name: "video.mp4",
+        type: "Video",
+        size: "20 MB",
       },
     ]);
   }, []);
@@ -35,11 +48,15 @@ export default function Dashboard() {
     window.location.href = "/";
   };
 
-  const handleFileAction = (action: string, fileId: string) => {
-    console.log(`${action} file with id: ${fileId}`);
+  const handleFileAction = (action: string, file: File) => {
+    if (action === "preview") {
+      setPreviewFile(file);
+    }
   };
 
-  console.log(files);
+  const handleClosePreview = () => {
+    setPreviewFile(null);
+  };
 
   return (
     <div className="w-full max-w-4xl mx-auto mt-20">
@@ -53,61 +70,12 @@ export default function Dashboard() {
             Log Out
           </button>
         </div>
-        <div className="p-6">
-          <table className="min-w-full table-auto text-left">
-            <thead>
-              <tr>
-                <th className="px-6 py-3 text-gray-500 font-medium text-sm">
-                  Name
-                </th>
-                <th className="px-6 py-3 text-gray-500 font-medium text-sm">
-                  Type
-                </th>
-                <th className="px-6 py-3 text-gray-500 font-medium text-sm">
-                  Size
-                </th>
-                <th className="px-6 py-3 text-gray-500 font-medium text-sm">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {files.map((file) => (
-                <tr key={file.id} className="border-t">
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                    {file.name}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
-                    {file.type}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
-                    {file.size}
-                  </td>
-                  <td className="px-6 py-4">
-                    <button
-                      onClick={() => handleFileAction("preview", file.id)}
-                      className="bg-white border border-gray-300 text-gray-700 rounded-md px-3 py-1 text-sm hover:bg-gray-50 mr-2"
-                    >
-                      Preview
-                    </button>
-                    <button
-                      onClick={() => handleFileAction("download", file.id)}
-                      className="bg-white border border-gray-300 text-gray-700 rounded-md px-3 py-1 text-sm hover:bg-gray-50 mr-2"
-                    >
-                      Download
-                    </button>
-                    <button
-                      onClick={() => handleFileAction("share", file.id)}
-                      className="bg-white border border-gray-300 text-gray-700 rounded-md px-3 py-1 text-sm hover:bg-gray-50"
-                    >
-                      Share
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+
+        <FileTable files={files} onFileAction={handleFileAction} />
+
+        {previewFile && (
+          <PreviewModal file={previewFile} onClose={handleClosePreview} />
+        )}
       </div>
     </div>
   );
