@@ -11,23 +11,34 @@ type File = {
 
 export default function Dashboard() {
   const [files, setFiles] = useState<File[]>([]);
-  const [previewFile, setPreviewFile] = useState<File | null>(null); // State for file preview
+  const [previewFile, setPreviewFile] = useState<File | null>(null);
 
   useEffect(() => {
-    // Simulating fetching file list from local storage
     setFiles([
       {
         id: "1",
         name: "Document1.docx",
-        type: "Word Document",
+        type: "Document",
         size: "2.3 MB",
       },
-      { id: "2", name: "image123.jpg", type: "Image", size: "1.5 MB" }, // Image in public folder
+      { id: "2", name: "image123.jpg", type: "Image", size: "1.5 MB" },
       {
         id: "3",
         name: "Spreadsheet1.xlsx",
-        type: "Excel Spreadsheet",
+        type: "Spreadsheet",
         size: "500 KB",
+      },
+      {
+        id: "4",
+        name: "sample.pdf",
+        type: "PDF",
+        size: "1 MB",
+      },
+      {
+        id: "5",
+        name: "video.mp4",
+        type: "Video",
+        size: "20 MB",
       },
     ]);
   }, []);
@@ -38,14 +49,13 @@ export default function Dashboard() {
   };
 
   const handleFileAction = (action: string, file: File) => {
-    if (action === "preview" && file.type === "Image") {
-      setPreviewFile(file); // Set file for preview
+    if (action === "preview") {
+      setPreviewFile(file);
     }
-    // Handle other actions (download, share) as needed
   };
 
   const handleClosePreview = () => {
-    setPreviewFile(null); // Close the preview
+    setPreviewFile(null);
   };
 
   return (
@@ -61,10 +71,8 @@ export default function Dashboard() {
           </button>
         </div>
 
-        {/* File Table */}
         <FileTable files={files} onFileAction={handleFileAction} />
 
-        {/* Preview Modal */}
         {previewFile && (
           <PreviewModal file={previewFile} onClose={handleClosePreview} />
         )}
