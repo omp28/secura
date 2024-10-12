@@ -9,6 +9,7 @@ type File = {
 
 export default function Dashboard() {
   const [files, setFiles] = useState<File[]>([]);
+  const [previewFile, setPreviewFile] = useState<File | null>(null); // State for file preview
 
   useEffect(() => {
     const accessKey = localStorage.getItem("accessKey");
@@ -20,7 +21,7 @@ export default function Dashboard() {
         type: "Word Document",
         size: "2.3 MB",
       },
-      { id: "2", name: "Image1.jpg", type: "Image", size: "1.5 MB" },
+      { id: "2", name: "image123.jpg", type: "Image", size: "1.5 MB" }, // Image in public folder
       {
         id: "3",
         name: "Spreadsheet1.xlsx",
@@ -36,10 +37,19 @@ export default function Dashboard() {
   };
 
   const handleFileAction = (action: string, fileId: string) => {
-    console.log(`${action} file with id: ${fileId}`);
+    const file = files.find((f) => f.id === fileId);
+    if (action === "preview" && file && file.type === "Image") {
+      setPreviewFile(file); // Set the file for preview
+    } else if (action === "download") {
+      console.log(`Download file with id: ${fileId}`);
+    } else if (action === "share") {
+      console.log(`Share file with id: ${fileId}`);
+    }
   };
 
-  console.log(files);
+  const handleClosePreview = () => {
+    setPreviewFile(null); // Close the preview
+  };
 
   return (
     <div className="w-full max-w-4xl mx-auto mt-20">
@@ -109,6 +119,35 @@ export default function Dashboard() {
           </table>
         </div>
       </div>
+
+      {/* Preview Modal */}
+      {previewFile && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-semibold">
+                Preview: {previewFile.name}
+              </h3>
+              <button
+                onClick={handleClosePreview}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                Close
+              </button>
+            </div>
+            <div className="mt-4">
+              {previewFile.type === "Image" && (
+                <img
+                  src={`/${previewFile.name}`} // Accessing image from public folder
+                  alt={previewFile.name}
+                  className="max-w-full max-h-80"
+                />
+              )}
+              {/* Handle other file types like PDFs here if needed */}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
