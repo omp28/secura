@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import * as XLSX from "xlsx";
 import * as mammoth from "mammoth";
 
@@ -6,7 +6,7 @@ type File = {
   id: string;
   name: string;
   type: string;
-  size: string;
+  size: any;
 };
 
 type PreviewModalProps = {
@@ -17,33 +17,61 @@ type PreviewModalProps = {
 const PreviewModal: React.FC<PreviewModalProps> = ({ file, onClose }) => {
   const [spreadsheetData, setSpreadsheetData] = useState<any[][] | null>(null);
   const [docxContent, setDocxContent] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
+  // Helper to fetch spreadsheet data
+  const fetchSpreadsheet = async (fileName: string) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`/${fileName}`);
+      const arrayBuffer = await response.arrayBuffer();
+      const workbook = XLSX.read(arrayBuffer, { type: "array" });
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      const parsedData = XLSX.utils.sheet_to_json(sheet, {
+        header: 1,
+      }) as any[][];
+      setSpreadsheetData(parsedData);
+    } catch (err) {
+      setError("Error fetching spreadsheet.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Helper to fetch DOCX data
+  const fetchDocx = async (fileName: string) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`/${fileName}`);
+      const arrayBuffer = await response.arrayBuffer();
+      const result = await mammoth.convertToHtml({ arrayBuffer });
+      setDocxContent(result.value);
+    } catch (err) {
+      setError("Error fetching DOCX document.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Trigger data fetch based on file type
   useEffect(() => {
     if (file.type === "Spreadsheet") {
-      fetch(`/${file.name}`)
-        .then((res) => res.arrayBuffer())
-        .then((data) => {
-          const workbook = XLSX.read(data, { type: "array" });
-          const sheetName = workbook.SheetNames[0];
-          const sheet = workbook.Sheets[sheetName];
-          const parsedData = XLSX.utils.sheet_to_json(sheet, {
-            header: 1,
-          }) as any[][];
-          setSpreadsheetData(parsedData);
-        });
+      fetchSpreadsheet(file.name);
     } else if (file.type === "Document") {
-      fetch(`/${file.name}`)
-        .then((res) => res.arrayBuffer())
-        .then((arrayBuffer) => {
-          mammoth
-            .convertToHtml({ arrayBuffer })
-            .then((result) => setDocxContent(result.value))
-            .catch((err) => console.error("Error processing DOCX file:", err));
-        });
+      fetchDocx(file.name);
     }
   }, [file]);
 
-  const renderPreviewContent = () => {
+  // Memoized preview content
+  const previewContent = useMemo(() => {
+    if (loading) {
+      return <p>Loading...</p>;
+    }
+    if (error) {
+      return <p className="text-red-500">{error}</p>;
+    }
     if (file.type === "Image") {
       return (
         <img
@@ -88,7 +116,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ file, onClose }) => {
     } else {
       return <p>Preview not available for this file type. Download to view.</p>;
     }
-  };
+  }, [file, spreadsheetData, docxContent, loading, error]);
 
   return (
     <div
@@ -108,9 +136,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ file, onClose }) => {
             Close
           </button>
         </div>
-        <div className="py-4 h-full overflow-auto">
-          {renderPreviewContent()}
-        </div>
+        <div className="py-4 h-full overflow-auto">{previewContent}</div>
       </div>
     </div>
   );

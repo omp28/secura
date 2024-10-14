@@ -8,6 +8,7 @@ import {
 import Login from "./components/Login";
 import Dashboard from "./components/DashBoard";
 import "./App.css";
+import NewDashBoard from "./components/NewDashBoard";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/NewDashboard" element={<NewDashBoard />} />
           {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
         </Routes>
       </div>
