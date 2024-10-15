@@ -1,28 +1,35 @@
-import React from "react";
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  Navigate,
-} from "react-router-dom";
+import React, { useState } from "react";
+import Signup from "./components/Signup";
 import Login from "./components/Login";
-import Dashboard from "./components/DashBoard";
-import "./App.css";
-import NewDashBoard from "./components/NewDashBoard";
 
-function App() {
+const App = () => {
+  const [isLogin, setIsLogin] = useState(true);
+
   return (
-    <Router>
-      <div className="App">
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/NewDashboard" element={<NewDashBoard />} />
-          {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
-        </Routes>
-      </div>
-    </Router>
+    <div className=" bg-black">
+      {isLogin ? (
+        <>
+          <Login />
+          <p className="text-center text-white mt-4">
+            Don't have an account?{" "}
+            <button className="text-blue-500" onClick={() => setIsLogin(false)}>
+              Sign Up
+            </button>
+          </p>
+        </>
+      ) : (
+        <>
+          <Signup />
+          <p className="text-center text-white mt-4">
+            Already have an account?{" "}
+            <button className="text-blue-500" onClick={() => setIsLogin(true)}>
+              Log In
+            </button>
+          </p>
+        </>
+      )}
+    </div>
   );
-}
+};
 
 export default App;
