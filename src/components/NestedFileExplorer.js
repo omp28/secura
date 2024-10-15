@@ -34,7 +34,9 @@
 //   const handleSubmit = () => {
 //     const newFileData: CustomFile = {
 //       id: Math.random().toString(),
-//       size: newFile ? `${(newFile.size / (1024 * 1024)).toFixed(2)} MB` : "0 MB",
+//       size: newFile
+//         ? `${(newFile.size / (1024 * 1024)).toFixed(2)} MB`
+//         : "0 MB",
 //       name: newFileName,
 //       type: isFolder ? "Folder" : newFileType,
 //       children: isFolder ? [] : undefined,
@@ -57,7 +59,12 @@
 //     if (mimeType.startsWith("image/")) return "Image";
 //     if (mimeType.startsWith("application/pdf")) return "PDF";
 //     if (mimeType.startsWith("application/vnd.ms-excel")) return "Spreadsheet";
-//     if (mimeType.startsWith("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) return "Spreadsheet";
+//     if (
+//       mimeType.startsWith(
+//         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+//       )
+//     )
+//       return "Spreadsheet";
 //     if (mimeType.startsWith("video/")) return "Video";
 //     return "Document"; // Default type for unknown file types
 //   };
@@ -85,13 +92,13 @@
 //         )}
 //         <div className="flex justify-end space-x-2">
 //           <button
-//             className="bg-red-500 text-white px-4 py-2 rounded-md"
+//             className="px-4 py-2 rounded-md text-sm transition-all hover:shadow-lg hover:opacity-90"
 //             onClick={onClose}
 //           >
 //             Cancel
 //           </button>
 //           <button
-//             className="bg-blue-500 text-white px-4 py-2 rounded-md"
+//             className="px-4 py-2 rounded-md text-sm transition-all hover:shadow-lg hover:opacity-90"
 //             onClick={handleSubmit}
 //             disabled={isFolder && !newFileName}
 //           >
@@ -102,8 +109,8 @@
 //         {newFile && !isFolder && (
 //           <div className="mt-4">
 //             <p>
-//               <strong>File Size:</strong> {fileSize}{" "}
-//               <strong>Type:</strong> {newFileType}
+//               <strong>File Size:</strong> {fileSize} <strong>Type:</strong>{" "}
+//               {newFileType}
 //             </p>
 //           </div>
 //         )}
@@ -150,7 +157,9 @@
 //     setEditingFileId(null);
 //   };
 
-//   const [expandedFiles, setExpandedFiles] = useState<{ [id: string]: boolean }>({});
+//   const [expandedFiles, setExpandedFiles] = useState<{ [id: string]: boolean }>(
+//     {}
+//   );
 
 //   const toggleExpansion = (fileId: string) => {
 //     setExpandedFiles((prev) => ({
@@ -198,7 +207,7 @@
 //                     {file.type !== "Folder" ? (
 //                       <>
 //                         <button
-//                           className="border-2 px-2 rounded-md ml-4"
+//                           className=" px-2 rounded-md ml-4 border-[1px] border-black"
 //                           onClick={() => openPreview(file)}
 //                         >
 //                           Preview
@@ -213,37 +222,34 @@
 //                   </span>
 //                 )}
 //               </div>
-//               <div>
-//                 <button
-//                   onClick={() => openModal(file, false)}
-//                   disabled={file.type !== "Folder"}
-//                   className={`text-sm bg-green-500 text-white px-2 py-1 rounded mr-2 ${
-//                     file.type !== "Folder" ? "disabled opacity-0" : ""
-//                   }`}
-//                 >
-//                   <i className="fas fa-plus"></i>{" "}
-//                 </button>
-//                 <button
-//                   onClick={() => openModal(file, true)}
-//                   disabled={file.type !== "Folder"}
-//                   className={`text-sm bg-green-500 text-white px-2 py-1 rounded ${
-//                     file.type !== "Folder" ? "disabled opacity-0" : ""
-//                   }`}
-//                 >
-//                   <i className="fas fa-folder-plus"></i>
-//                   {/* Add Folder */}
-//                 </button>
+//               <div className="flex space-x-2">
+//                 {file.type === "Folder" && (
+//                   <>
+//                     <button
+//                       onClick={() => openModal(file, false)}
+//                       className="px-3 py-1 rounded-md text-sm transition-all hover:shadow-lg hover:opacity-90 border-[1px] border-black"
+//                     >
+//                       Add File
+//                     </button>
+//                     <button
+//                       onClick={() => openModal(file, true)}
+//                       className="px-3 py-1 rounded-md text-sm transition-all hover:shadow-lg hover:opacity-90 border-[1px] border-black"
+//                     >
+//                       Add Folder
+//                     </button>
+//                   </>
+//                 )}
 //                 <button
 //                   onClick={() => deleteFile(file.id)}
-//                   className="text-sm bg-red-500 text-white px-2 py-1 rounded ml-2"
+//                   className="px-3 py-1 rounded-md text-sm transition-all hover:shadow-lg hover:opacity-90 border-[1px] border-black"
 //                 >
-//                   <i className="fas fa-trash-alt"></i> {/* Icon for delete */}
+//                   Delete
 //                 </button>
 //                 <button
 //                   onClick={() => toggleEditing(file)}
-//                   className="text-sm bg-yellow-500 text-white px-2 py-1 rounded ml-2"
+//                   className="px-3 py-1 rounded-md text-sm transition-all hover:shadow-lg hover:opacity-90 border-[1px] border-black"
 //                 >
-//                   <i className="fas fa-edit"></i> {/* Icon for rename */}
+//                   Rename
 //                 </button>
 //               </div>
 //             </div>
@@ -277,7 +283,12 @@
 //     if (mimeType.startsWith("image/")) return "Image";
 //     if (mimeType.startsWith("application/pdf")) return "PDF";
 //     if (mimeType.startsWith("application/vnd.ms-excel")) return "Spreadsheet";
-//     if (mimeType.startsWith("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) return "Spreadsheet";
+//     if (
+//       mimeType.startsWith(
+//         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+//       )
+//     )
+//       return "Spreadsheet";
 //     if (mimeType.startsWith("video/")) return "Video";
 //     return "Document"; // Default type for unknown file types
 //   };
@@ -301,7 +312,7 @@
 //       {previewFile && (
 //         <PreviewModal file={previewFile} onClose={closePreview} />
 //       )}
-//       <div className="p-4 border-2 border-dashed border-gray-400 text-center">
+//       <div className="p-4 border-2 border-dashed border-gray-400 text-center h-40 mt-10">
 //         <p>Drag and drop files here to upload</p>
 //       </div>
 //     </div>
@@ -310,38 +321,14 @@
 import React, { useState } from "react";
 import PreviewModal from "./PreviewModal";
 
-type CustomFile = {
-  id: string;
-  name: string;
-  type: "Document" | "Image" | "Spreadsheet" | "PDF" | "Video" | "Folder";
-  size: string;
-  children?: CustomFile[];
-};
-
-interface NestedFileExplorerProps {
-  files: CustomFile[];
-  onFileAction: (action: string, file: CustomFile) => void;
-  addFile: (parentId: string, newFile: CustomFile) => void;
-  deleteFile: (id: string) => void;
-  renameFile: (id: string, newName: string) => void;
-}
-
-const AddFileModal: React.FC<{
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit: (newFile: CustomFile) => void;
-  parentFile: CustomFile;
-  isFolder: boolean;
-}> = ({ isOpen, onClose, onSubmit, parentFile, isFolder }) => {
-  const [newFileName, setNewFileName] = useState<string>("");
-  const [newFileType, setNewFileType] = useState<
-    "Document" | "Image" | "Spreadsheet" | "PDF" | "Video" | "Folder"
-  >("Document");
-  const [newFile, setNewFile] = useState<File | null>(null);
-  const [fileSize, setFileSize] = useState<string>("");
+const AddFileModal = ({ isOpen, onClose, onSubmit, parentFile, isFolder }) => {
+  const [newFileName, setNewFileName] = useState("");
+  const [newFileType, setNewFileType] = useState("Document");
+  const [newFile, setNewFile] = useState(null);
+  const [fileSize, setFileSize] = useState("");
 
   const handleSubmit = () => {
-    const newFileData: CustomFile = {
+    const newFileData = {
       id: Math.random().toString(),
       size: newFile
         ? `${(newFile.size / (1024 * 1024)).toFixed(2)} MB`
@@ -354,7 +341,7 @@ const AddFileModal: React.FC<{
     onClose();
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (event) => {
     const file = event.target.files?.[0];
     if (file) {
       setNewFile(file);
@@ -364,7 +351,7 @@ const AddFileModal: React.FC<{
     }
   };
 
-  const getFileType = (mimeType: string): CustomFile["type"] => {
+  const getFileType = (mimeType) => {
     if (mimeType.startsWith("image/")) return "Image";
     if (mimeType.startsWith("application/pdf")) return "PDF";
     if (mimeType.startsWith("application/vnd.ms-excel")) return "Spreadsheet";
@@ -414,7 +401,6 @@ const AddFileModal: React.FC<{
             Add
           </button>
         </div>
-        {/* Display file size and type if a file is uploaded */}
         {newFile && !isFolder && (
           <div className="mt-4">
             <p>
@@ -434,15 +420,15 @@ export default function NestedFileExplorer({
   addFile,
   deleteFile,
   renameFile,
-}: NestedFileExplorerProps) {
-  const [modalOpen, setModalOpen] = useState<boolean>(false);
-  const [isFolder, setIsFolder] = useState<boolean>(false);
-  const [currentParent, setCurrentParent] = useState<CustomFile | null>(null);
-  const [previewFile, setPreviewFile] = useState<CustomFile | null>(null);
-  const [editingFileId, setEditingFileId] = useState<string | null>(null);
-  const [editedName, setEditedName] = useState<string>("");
+}) {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [isFolder, setIsFolder] = useState(false);
+  const [currentParent, setCurrentParent] = useState(null);
+  const [previewFile, setPreviewFile] = useState(null);
+  const [editingFileId, setEditingFileId] = useState(null);
+  const [editedName, setEditedName] = useState("");
 
-  const openModal = (file: CustomFile, folder: boolean) => {
+  const openModal = (file, folder) => {
     setCurrentParent(file);
     setIsFolder(folder);
     setModalOpen(true);
@@ -450,34 +436,32 @@ export default function NestedFileExplorer({
 
   const closeModal = () => setModalOpen(false);
 
-  const openPreview = (file: CustomFile) => {
+  const openPreview = (file) => {
     setPreviewFile(file);
   };
 
   const closePreview = () => setPreviewFile(null);
 
-  const toggleEditing = (file: CustomFile) => {
+  const toggleEditing = (file) => {
     setEditingFileId(file.id);
     setEditedName(file.name);
   };
 
-  const handleRename = (file: CustomFile) => {
+  const handleRename = (file) => {
     renameFile(file.id, editedName);
     setEditingFileId(null);
   };
 
-  const [expandedFiles, setExpandedFiles] = useState<{ [id: string]: boolean }>(
-    {}
-  );
+  const [expandedFiles, setExpandedFiles] = useState({});
 
-  const toggleExpansion = (fileId: string) => {
+  const toggleExpansion = (fileId) => {
     setExpandedFiles((prev) => ({
       ...prev,
       [fileId]: !prev[fileId],
     }));
   };
 
-  const renderFileTree = (fileList: CustomFile[]) => {
+  const renderFileTree = (fileList) => {
     return (
       <ul>
         {fileList.map((file) => (
@@ -516,7 +500,7 @@ export default function NestedFileExplorer({
                     {file.type !== "Folder" ? (
                       <>
                         <button
-                          className=" px-2 rounded-md ml-4 border-[1px] border-black"
+                          className="px-2 rounded-md ml-4 border-[1px] border-black"
                           onClick={() => openPreview(file)}
                         >
                           Preview
@@ -573,11 +557,11 @@ export default function NestedFileExplorer({
     );
   };
 
-  const handleFileUpload = (event: React.DragEvent<HTMLDivElement>) => {
+  const handleFileUpload = (event) => {
     event.preventDefault();
     const files = Array.from(event.dataTransfer.files);
     files.forEach((file) => {
-      const newFile: CustomFile = {
+      const newFile = {
         id: Math.random().toString(),
         name: file.name,
         size: `${(file.size / (1024 * 1024)).toFixed(2)} MB`, // Convert size to MB
@@ -588,7 +572,7 @@ export default function NestedFileExplorer({
     });
   };
 
-  const getFileType = (mimeType: string): CustomFile["type"] => {
+  const getFileType = (mimeType) => {
     if (mimeType.startsWith("image/")) return "Image";
     if (mimeType.startsWith("application/pdf")) return "PDF";
     if (mimeType.startsWith("application/vnd.ms-excel")) return "Spreadsheet";
@@ -602,7 +586,7 @@ export default function NestedFileExplorer({
     return "Document"; // Default type for unknown file types
   };
 
-  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+  const handleDragOver = (event) => {
     event.preventDefault();
   };
 
