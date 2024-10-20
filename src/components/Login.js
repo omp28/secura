@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
+import axios from "axios";
 
 const Login = () => {
   const [loginKey, setLoginKey] = useState("");
@@ -32,10 +33,19 @@ const Login = () => {
         }
       }
 
-      if (wallet.address === publicKey) {
-        setMessage("Login successful! Your public key is: " + wallet.address);
+      const storedPublicKey = wallet.address;
+
+      const response = await axios.post(
+        "http://localhost:5001/api/auth/login",
+        {
+          publicKey: storedPublicKey,
+        }
+      );
+
+      if (response.status === 200) {
+        setMessage("Login successful! Public key: " + storedPublicKey);
       } else {
-        setMessage("Invalid credentials.");
+        setMessage("Login failed: Invalid credentials.");
       }
     } catch (error) {
       setMessage("Error logging in: " + error.message);
@@ -46,9 +56,6 @@ const Login = () => {
     <div className="flex items-center justify-center h-screen bg-black">
       <div className="bg-gray-800 p-8 rounded-lg shadow-lg text-white w-full max-w-md">
         <h1 className="text-2xl font-bold mb-4">Login to Your Account</h1>
-        <p className="mb-6 text-gray-400">
-          Enter your mnemonic phrase or private key to log in.
-        </p>
         <input
           type="text"
           placeholder="Mnemonic or Private Key"
