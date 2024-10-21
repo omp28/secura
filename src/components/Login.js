@@ -42,6 +42,10 @@ const Login = () => {
         }
       );
 
+      localStorage.setItem("securaToken", response.data.token);
+
+      console.log("dashboard");
+
       if (response.status === 200) {
         setMessage("Login successful! Public key: " + storedPublicKey);
       } else {
