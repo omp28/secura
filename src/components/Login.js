@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import axios from "axios";
+import { useNavigate, Link } from "react-router-dom";
 
-const Login = () => {
+const Login = ({ setIsAuthenticated }) => {
   const [loginKey, setLoginKey] = useState("");
   const [message, setMessage] = useState("");
-  const [publicKey, setPublicKey] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedPublicKey = localStorage.getItem("publicKey");
     if (storedPublicKey) {
-      setPublicKey(storedPublicKey);
+      setIsAuthenticated(true);
+      navigate("/");
     }
-  }, []);
+  }, [navigate, setIsAuthenticated]);
 
   const isValidPrivateKey = (key) => {
     return /^0x[a-fA-F0-9]{64}$/.test(key);
@@ -45,7 +47,8 @@ const Login = () => {
       localStorage.setItem("securaToken", response.data.token);
 
       if (response.status === 200) {
-        setMessage("Login successful! Public key: " + storedPublicKey);
+        setIsAuthenticated(true);
+        navigate("/");
       } else {
         setMessage("Login failed: Invalid credentials.");
       }
@@ -72,6 +75,13 @@ const Login = () => {
           Login
         </button>
         {message && <p className="mt-4 text-gray-400">{message}</p>}
+
+        <p className="mt-4 text-gray-400">
+          Don't have an account?{" "}
+          <Link to="/auth/signup" className="text-blue-500">
+            Sign Up
+          </Link>
+        </p>
       </div>
     </div>
   );

@@ -1,21 +1,32 @@
 import React, { useState } from "react";
-import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
 import Signup from "./components/Signup";
 import Login from "./components/Login";
-import FileUpload from "./components/FileUpload";
+import Home from "./components/Home";
 
 const App = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   return (
     <Router>
-      <div className=" bg-black">
-        <Routes>
-          <Route path="/" element={<Login setIsLogin={setIsLogin} />} />
-          <Route path="/signup" element={<Signup setIsLogin={setIsLogin} />} />
-          <Route path="/upload" element={<FileUpload />} />
-        </Routes>
-      </div>
+      <Routes>
+        <Route
+          path="/auth/login"
+          element={<Login setIsAuthenticated={setIsAuthenticated} />}
+        />
+        <Route path="/auth/signup" element={<Signup />} />
+        <Route
+          path="/"
+          element={
+            isAuthenticated ? <Home /> : <Navigate to="/auth/login" replace />
+          }
+        />
+      </Routes>
     </Router>
   );
 };

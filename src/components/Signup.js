@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ethers } from "ethers";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 const Signup = () => {
   const [mnemonic, setMnemonic] = useState("");
@@ -63,6 +64,13 @@ const Signup = () => {
           </div>
         )}
         {message && <p>{message}</p>}
+
+        <p className="mt-4 text-gray-400">
+          Already have an account?{" "}
+          <Link to="/auth/login" className="text-blue-500">
+            Log In
+          </Link>
+        </p>
       </div>
     </div>
   );
