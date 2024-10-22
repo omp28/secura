@@ -2,11 +2,14 @@ import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import useAuthStore from "../store/useAuthStore";
 
-const Login = ({ setIsAuthenticated }) => {
+const Login = () => {
   const [loginKey, setLoginKey] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
+
+  const { isAuthenticated, setIsAuthenticated, logout } = useAuthStore();
 
   useEffect(() => {
     const storedPublicKey = localStorage.getItem("publicKey");
@@ -16,9 +19,7 @@ const Login = ({ setIsAuthenticated }) => {
     }
   }, [navigate, setIsAuthenticated]);
 
-  const isValidPrivateKey = (key) => {
-    return /^0x[a-fA-F0-9]{64}$/.test(key);
-  };
+  const isValidPrivateKey = (key) => /^0x[a-fA-F0-9]{64}$/.test(key);
 
   const handleLogin = async () => {
     let wallet;
@@ -39,9 +40,7 @@ const Login = ({ setIsAuthenticated }) => {
 
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}/api/auth/login`,
-        {
-          publicKey: storedPublicKey,
-        }
+        { publicKey: storedPublicKey }
       );
 
       localStorage.setItem("securaToken", response.data.token);
