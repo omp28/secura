@@ -2,11 +2,14 @@ import React, { useState } from "react";
 import { ethers } from "ethers";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import useAuthStore from "../store/useAuthStore";
 
 const Signup = () => {
   const [mnemonic, setMnemonic] = useState("");
   const [publicKey, setPublicKey] = useState("");
   const [message, setMessage] = useState("");
+
+  const { isAuthenticated, setIsAuthenticated, logout } = useAuthStore();
 
   const handleSignup = async () => {
     const wallet = ethers.Wallet.createRandom();
@@ -34,6 +37,7 @@ const Signup = () => {
     alert(
       `Mnemonic confirmed! Public key: ${publicKey}\nPrivate key: ${savedPrivateKey}`
     );
+    setIsAuthenticated(true);
   };
 
   return (

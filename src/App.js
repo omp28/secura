@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -8,17 +8,15 @@ import {
 import Signup from "./components/Signup";
 import Login from "./components/Login";
 import Home from "./components/Home";
+import useAuthStore from "./store/useAuthStore";
 
 const App = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   return (
     <Router>
       <Routes>
-        <Route
-          path="/auth/login"
-          element={<Login setIsAuthenticated={setIsAuthenticated} />}
-        />
+        <Route path="/auth/login" element={<Login />} />
         <Route path="/auth/signup" element={<Signup />} />
         <Route
           path="/"
