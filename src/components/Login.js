@@ -36,15 +36,13 @@ const Login = () => {
       const storedPublicKey = wallet.address;
 
       const response = await axios.post(
-        "http://localhost:5001/api/auth/login",
+        `${process.env.REACT_APP_API_URL}/api/auth/login`,
         {
           publicKey: storedPublicKey,
         }
       );
 
       localStorage.setItem("securaToken", response.data.token);
-
-      console.log("dashboard");
 
       if (response.status === 200) {
         setMessage("Login successful! Public key: " + storedPublicKey);

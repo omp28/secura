@@ -19,7 +19,7 @@ const Signup = () => {
     localStorage.setItem("privateKey", generatedPrivateKey);
 
     try {
-      await axios.post("http://localhost:5001/api/auth/signup", {
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/signup`, {
         publicKey: generatedPublicKey,
       });
       setMessage("Signup successful. Public key saved!");

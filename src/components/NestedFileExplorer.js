@@ -583,7 +583,7 @@ export default function NestedFileExplorer({
     )
       return "Spreadsheet";
     if (mimeType.startsWith("video/")) return "Video";
-    return "Document"; // Default type for unknown file types
+    return "Document";
   };
 
   const handleDragOver = (event) => {

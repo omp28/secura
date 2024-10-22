@@ -1,34 +1,22 @@
 import React, { useState } from "react";
+import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import Signup from "./components/Signup";
 import Login from "./components/Login";
+import FileUpload from "./components/FileUpload";
 
 const App = () => {
   const [isLogin, setIsLogin] = useState(true);
 
   return (
-    <div className=" bg-black">
-      {isLogin ? (
-        <>
-          <Login />
-          <p className="text-center text-white mt-4">
-            Don't have an account?{" "}
-            <button className="text-blue-500" onClick={() => setIsLogin(false)}>
-              Sign Up
-            </button>
-          </p>
-        </>
-      ) : (
-        <>
-          <Signup />
-          <p className="text-center text-white mt-4">
-            Already have an account?{" "}
-            <button className="text-blue-500" onClick={() => setIsLogin(true)}>
-              Log In
-            </button>
-          </p>
-        </>
-      )}
-    </div>
+    <Router>
+      <div className=" bg-black">
+        <Routes>
+          <Route path="/" element={<Login setIsLogin={setIsLogin} />} />
+          <Route path="/signup" element={<Signup setIsLogin={setIsLogin} />} />
+          <Route path="/upload" element={<FileUpload />} />
+        </Routes>
+      </div>
+    </Router>
   );
 };
 
