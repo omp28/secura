@@ -20,9 +20,10 @@ const App = () => {
         <Route path="/auth/signup" element={<Signup />} />
         <Route
           path="/"
-          element={
-            isAuthenticated ? <Home /> : <Navigate to="/auth/login" replace />
-          }
+          element={<Home />}
+          // element={
+          //   isAuthenticated ? <Home /> : <Navigate to="/auth/login" replace />
+          // }
         />
       </Routes>
     </Router>

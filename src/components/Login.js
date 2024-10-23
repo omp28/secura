@@ -3,13 +3,15 @@ import { ethers } from "ethers";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import useAuthStore from "../store/useAuthStore";
+import { jwtDecode } from "jwt-decode";
 
 const Login = () => {
   const [loginKey, setLoginKey] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
-  const { isAuthenticated, setIsAuthenticated, logout } = useAuthStore();
+  const { isAuthenticated, setIsAuthenticated, setUserID, logout } =
+    useAuthStore();
 
   useEffect(() => {
     const storedPublicKey = localStorage.getItem("publicKey");
@@ -43,10 +45,18 @@ const Login = () => {
         { publicKey: storedPublicKey }
       );
 
-      localStorage.setItem("securaToken", response.data.token);
-
       if (response.status === 200) {
+        const { token } = response.data;
+        const decodedToken = jwtDecode(token);
+        const userID = decodedToken.id;
+        console.log(userID);
+
+        localStorage.setItem("securaToken", token);
+        localStorage.setItem("securaUserID", userID);
+
         setIsAuthenticated(true);
+        setUserID(userID);
+
         navigate("/");
       } else {
         setMessage("Login failed: Invalid credentials.");

@@ -1,24 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
+import useAuthStore from "../store/useAuthStore";
 
-const FileUpload = () => {
+const FileUpload = ({ onUploadSuccess }) => {
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const [uploadedFiles, setUploadedFiles] = useState([]);
-
-  useEffect(() => {
-    const fetchFiles = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/api/getfiles`
-        );
-        setUploadedFiles(response.data);
-      } catch (error) {
-        console.error("Error fetching files:", error);
-      }
-    };
-
-    fetchFiles();
-  }, []);
+  const { userID } = useAuthStore();
 
   const handleFileChange = (e) => {
     if (e.target.files) {
@@ -36,10 +22,11 @@ const FileUpload = () => {
     selectedFiles.forEach((file) => {
       formData.append("files", file);
     });
+    formData.append("userID", userID);
 
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/upload`,
+        `${process.env.REACT_APP_API_URL}/api/files/upload`,
         formData,
         {
           headers: {
@@ -50,10 +37,9 @@ const FileUpload = () => {
       alert("Files uploaded successfully!");
       console.log(response.data);
 
-      const updatedFiles = await axios.get(
-        `${process.env.REACT_APP_API_URL}/api/getfiles`
-      );
-      setUploadedFiles(updatedFiles.data);
+      if (onUploadSuccess) {
+        onUploadSuccess();
+      }
     } catch (error) {
       alert("Error uploading files: " + error.message);
     }
@@ -70,24 +56,6 @@ const FileUpload = () => {
       >
         Upload
       </button>
-
-      <div style={{ marginTop: "20px" }}>
-        <h2>Uploaded Files:</h2>
-        <ul>
-          {uploadedFiles.map((file) => (
-            <li key={file.filename}>
-              <img
-                src={file.url}
-                alt={file.filename}
-                style={{ width: "100px", marginRight: "10px" }}
-              />
-              <a className="text-white" href={file.url} download>
-                {file.filename}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
     </div>
   );
 };
