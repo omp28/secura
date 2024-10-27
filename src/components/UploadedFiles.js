@@ -25,6 +25,8 @@ const UploadedFiles = () => {
     fetchFiles();
   }, [securaUserID]);
 
+  console.log("Uploaded files:", uploadedFiles);
+
   return (
     <div style={{ marginTop: "20px" }}>
       <h2>Uploaded Files:</h2>
@@ -32,17 +34,15 @@ const UploadedFiles = () => {
         {uploadedFiles.map((file, index) => (
           <li key={file._id || index}>
             {" "}
-            <img
-              src={`${process.env.REACT_APP_API_URL}/${file.filePath}`}
-              alt={file.fileName}
-              style={{ width: "100px", marginRight: "10px" }}
-            />
-            <a
-              className="text-white"
-              href={`${process.env.REACT_APP_API_URL}/${file.filePath}`}
+            <a className="text-white text-sm" href={`${file.url}`} download>
+              <img
+                src={`${file.url}`}
+                alt={file.url}
+                style={{ width: "100px", marginRight: "10px" }}
+              />
+            </a>
+            <a download href={`${file.url}`}>
               download
-            >
-              {file.fileName}
             </a>
           </li>
         ))}
