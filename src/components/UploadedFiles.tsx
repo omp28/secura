@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
+interface UploadedFile {
+  _id?: string;
+  url: string;
+}
+
 const UploadedFiles = () => {
-  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
 
   const securaUserID = localStorage.getItem("securaUserID");
 
@@ -16,7 +21,7 @@ const UploadedFiles = () => {
         const response = await axios.get(
           `${process.env.REACT_APP_API_URL}/api/files/getfiles/${securaUserID}`
         );
-        setUploadedFiles(response.data); // Store the uploaded files
+        setUploadedFiles(response.data);
       } catch (error) {
         console.error("Error fetching files:", error);
       }

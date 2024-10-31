@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import axios from "axios";
 import useAuthStore from "../store/useAuthStore";
 
-const FileUpload = ({ onUploadSuccess }) => {
-  const [selectedFiles, setSelectedFiles] = useState([]);
+const FileUpload: React.FC = () => {
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const { userID } = useAuthStore();
 
-  const handleFileChange = (e) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setSelectedFiles([...e.target.files]);
+      setSelectedFiles(Array.from(e.target.files));
     }
   };
 
@@ -22,7 +22,13 @@ const FileUpload = ({ onUploadSuccess }) => {
     selectedFiles.forEach((file) => {
       formData.append("files", file);
     });
-    formData.append("userID", userID);
+
+    if (userID) {
+      formData.append("userID", userID);
+    } else {
+      alert("User ID is missing. Please log in again.");
+      return;
+    }
 
     try {
       const response = await axios.post(
@@ -36,11 +42,7 @@ const FileUpload = ({ onUploadSuccess }) => {
       );
       alert("Files uploaded successfully!");
       console.log(response.data);
-
-      if (onUploadSuccess) {
-        onUploadSuccess();
-      }
-    } catch (error) {
+    } catch (error: any) {
       alert("Error uploading files: " + error.message);
     }
   };

@@ -4,16 +4,17 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import useAuthStore from "../store/useAuthStore";
 
-const Signup = () => {
-  const [mnemonic, setMnemonic] = useState("");
-  const [publicKey, setPublicKey] = useState("");
-  const [message, setMessage] = useState("");
+const Signup: React.FC = () => {
+  const [mnemonic, setMnemonic] = useState<string>("");
+  const [publicKey, setPublicKey] = useState<string>("");
+  const [message, setMessage] = useState<string>("");
 
-  const { isAuthenticated, setIsAuthenticated, logout } = useAuthStore();
+  const { setIsAuthenticated } = useAuthStore();
 
-  const handleSignup = async () => {
+  const handleSignup = async (): Promise<void> => {
     const wallet = ethers.Wallet.createRandom();
-    const generatedMnemonic = wallet.mnemonic.phrase;
+
+    const generatedMnemonic = wallet.mnemonic ? wallet.mnemonic.phrase : "";
     const generatedPrivateKey = wallet.privateKey;
     const generatedPublicKey = wallet.address;
 
@@ -27,12 +28,15 @@ const Signup = () => {
         publicKey: generatedPublicKey,
       });
       setMessage("Signup successful. Public key saved!");
-    } catch (error) {
-      setMessage("Error during signup: " + error.response.data.message);
+    } catch (error: any) {
+      setMessage(
+        "Error during signup: " +
+          (error.response?.data?.message || "Unknown error")
+      );
     }
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = (): void => {
     const savedPrivateKey = localStorage.getItem("privateKey");
     alert(
       `Mnemonic confirmed! Public key: ${publicKey}\nPrivate key: ${savedPrivateKey}`
