@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { ethers } from "ethers";
+import { ethers, Wallet, HDNodeWallet, Mnemonic } from "ethers";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import useAuthStore from "../store/useAuthStore";
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode as jwtDecode } from "jwt-decode";
+
+interface DecodedToken {
+  id: string;
+}
 
 const Login = () => {
-  const [loginKey, setLoginKey] = useState("");
-  const [message, setMessage] = useState("");
+  const [loginKey, setLoginKey] = useState<string>("");
+  const [message, setMessage] = useState<string>("");
   const navigate = useNavigate();
 
-  const { isAuthenticated, setIsAuthenticated, setUserID, logout } =
-    useAuthStore();
+  const { setIsAuthenticated, setUserID } = useAuthStore();
 
   useEffect(() => {
     const storedPublicKey = localStorage.getItem("publicKey");
@@ -21,22 +24,24 @@ const Login = () => {
     }
   }, [navigate, setIsAuthenticated]);
 
-  const isValidPrivateKey = (key) => /^0x[a-fA-F0-9]{64}$/.test(key);
+  const isValidPrivateKey = (key: string) => /^0x[a-fA-F0-9]{64}$/.test(key);
 
   const handleLogin = async () => {
-    let wallet;
+    let wallet: HDNodeWallet | Wallet | undefined;
 
     try {
       try {
-        const mnemonic = ethers.Mnemonic.fromPhrase(loginKey);
-        wallet = ethers.Wallet.fromMnemonic(mnemonic.phrase);
-      } catch (mnemonicError) {
+        const mnemonic = Mnemonic.fromPhrase(loginKey);
+        wallet = ethers.HDNodeWallet.fromMnemonic(mnemonic);
+      } catch {
         if (isValidPrivateKey(loginKey)) {
-          wallet = new ethers.Wallet(loginKey);
+          wallet = new Wallet(loginKey);
         } else {
           throw new Error("Invalid mnemonic or private key.");
         }
       }
+
+      if (!wallet) throw new Error("Wallet generation failed.");
 
       const storedPublicKey = wallet.address;
 
@@ -47,9 +52,8 @@ const Login = () => {
 
       if (response.status === 200) {
         const { token } = response.data;
-        const decodedToken = jwtDecode(token);
+        const decodedToken = jwtDecode<DecodedToken>(token);
         const userID = decodedToken.id;
-        console.log(userID);
 
         localStorage.setItem("securaToken", token);
         localStorage.setItem("securaUserID", userID);
@@ -61,7 +65,7 @@ const Login = () => {
       } else {
         setMessage("Login failed: Invalid credentials.");
       }
-    } catch (error) {
+    } catch (error: any) {
       setMessage("Error logging in: " + error.message);
     }
   };
