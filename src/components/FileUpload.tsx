@@ -1,10 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import useAuthStore from "../store/useAuthStore";
 
 const FileUpload: React.FC = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const { userID } = useAuthStore();
+  const { userID, isAuthenticated } = useAuthStore();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      alert("Please log in again.");
+      return;
+    }
+  }, [isAuthenticated]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
