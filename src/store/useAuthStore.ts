@@ -10,12 +10,25 @@ interface AuthStore {
 }
 
 const useAuthStore = create<AuthStore>((set) => ({
-  isAuthenticated: false,
-  userID: null,
+  isAuthenticated: localStorage.getItem("securaToken") ? true : false,
+  userID: localStorage.getItem("securaUserID"),
 
-  setIsAuthenticated: (authState: boolean) => set({ isAuthenticated: authState }),
-  setUserID: (id: string) => set({ userID: id }),
-  logout: () => set({ isAuthenticated: false }),
+  setIsAuthenticated: (authState: boolean) => {
+    set({ isAuthenticated: authState });
+    if (!authState) {
+      localStorage.removeItem("securaToken");
+      localStorage.removeItem("securaUserID");
+    }
+  },
+  setUserID: (id: string) => {
+    set({ userID: id });
+    localStorage.setItem("securaUserID", id);
+  },
+  logout: () => {
+    set({ isAuthenticated: false, userID: null });
+    localStorage.removeItem("securaToken");
+    localStorage.removeItem("securaUserID");
+  },
 
   isValidPrivateKey: (key: string): boolean => /^0x[a-fA-F0-9]{64}$/.test(key),
 }));
