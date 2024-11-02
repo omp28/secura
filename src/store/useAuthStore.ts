@@ -10,6 +10,7 @@ interface AuthStore {
 }
 
 const useAuthStore = create<AuthStore>((set) => ({
+  // TODO: cookies implementation
   isAuthenticated: localStorage.getItem("securaToken") ? true : false,
   userID: localStorage.getItem("securaUserID"),
 

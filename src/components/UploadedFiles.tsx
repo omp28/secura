@@ -17,8 +17,6 @@ const UploadedFiles = () => {
 
   useEffect(() => {
     const fetchFiles = async () => {
-      console.log("Fetching files for userID:", securaUserID);
-
       if (!securaUserID) return;
 
       try {
@@ -26,6 +24,7 @@ const UploadedFiles = () => {
           `${process.env.REACT_APP_API_URL}/api/files/getfiles/${securaUserID}`
         );
         setUploadedFiles(response.data);
+        console.log("Files fetched:", response.data);
       } catch (error) {
         console.error("Error fetching files:", error);
       }
@@ -33,8 +32,6 @@ const UploadedFiles = () => {
 
     fetchFiles();
   }, [securaUserID]);
-
-  console.log("Uploaded files:", uploadedFiles);
 
   const openFullscreen = (imageData: string) => {
     setFullscreenImage(imageData);
@@ -44,8 +41,10 @@ const UploadedFiles = () => {
     setFullscreenImage(null);
   };
 
+  console.log("uploadedFiles", uploadedFiles);
   return (
     <div className="mt-5">
+      {/* TODO: preview all despite file type  */}
       <h2 className="text-2xl font-semibold">Uploaded Files:</h2>
       <ul className="mt-3 space-y-4">
         {uploadedFiles.map((file, index) => (

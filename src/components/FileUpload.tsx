@@ -48,7 +48,6 @@ const FileUpload: React.FC = () => {
         }
       );
       alert("Files uploaded successfully!");
-      console.log(response.data);
     } catch (error: any) {
       alert("Error uploading files: " + error.message);
     }
