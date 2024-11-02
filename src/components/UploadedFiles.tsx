@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import FullscreenModal from "./UI/FullscreenModal";
 
 interface UploadedFile {
   _id?: string;
-  url: string;
+  filename: string;
+  fileType: string;
+  fileData: string;
 }
 
 const UploadedFiles = () => {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
 
   const securaUserID = localStorage.getItem("securaUserID");
 
@@ -32,26 +36,50 @@ const UploadedFiles = () => {
 
   console.log("Uploaded files:", uploadedFiles);
 
+  const openFullscreen = (imageData: string) => {
+    setFullscreenImage(imageData);
+  };
+
+  const closeFullscreen = () => {
+    setFullscreenImage(null);
+  };
+
   return (
-    <div style={{ marginTop: "20px" }}>
-      <h2>Uploaded Files:</h2>
-      <ul>
+    <div className="mt-5">
+      <h2 className="text-2xl font-semibold">Uploaded Files:</h2>
+      <ul className="mt-3 space-y-4">
         {uploadedFiles.map((file, index) => (
-          <li key={file._id || index}>
-            {" "}
-            <a className="text-white text-sm" href={`${file.url}`} download>
+          <li key={file._id || index} className="flex items-center">
+            {file.fileType.startsWith("image/") ? (
               <img
-                src={`${file.url}`}
-                alt={file.url}
-                style={{ width: "100px", marginRight: "10px" }}
+                src={file.fileData}
+                alt={file.filename}
+                className="w-24 h-24 mr-4 cursor-pointer object-cover"
+                onClick={() => openFullscreen(file.fileData)}
               />
-            </a>
-            <a download href={`${file.url}`}>
+            ) : (
+              <a
+                href={file.fileData}
+                download={file.filename}
+                className="text-blue-500 hover:underline mr-4"
+              >
+                {file.filename}
+              </a>
+            )}
+            <a
               download
+              href={file.fileData}
+              className="text-blue-500 hover:underline"
+            >
+              Download
             </a>
           </li>
         ))}
       </ul>
+
+      {fullscreenImage && (
+        <FullscreenModal imageSrc={fullscreenImage} onClose={closeFullscreen} />
+      )}
     </div>
   );
 };
