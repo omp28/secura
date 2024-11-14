@@ -1,37 +1,19 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import useFileStore from "../store/useFileStore";
 import FullscreenModal from "./UI/FullscreenModal";
+import useAuthStore from "../store/useAuthStore";
 
-interface UploadedFile {
-  _id?: string;
-  filename: string;
-  fileType: string;
-  fileData: string;
-}
-
-const UploadedFiles = () => {
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+const UploadedFiles: React.FC = () => {
+  const { files, fetchFiles, deleteAllFiles } = useFileStore();
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
 
-  const securaUserID = localStorage.getItem("securaUserID");
+  const { userID } = useAuthStore();
 
   useEffect(() => {
-    const fetchFiles = async () => {
-      if (!securaUserID) return;
-
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/api/files/getfiles/${securaUserID}`
-        );
-        setUploadedFiles(response.data);
-        console.log("Files fetched:", response.data);
-      } catch (error) {
-        console.error("Error fetching files:", error);
-      }
-    };
-
-    fetchFiles();
-  }, [securaUserID]);
+    if (userID) {
+      fetchFiles(userID);
+    }
+  }, [userID, fetchFiles]);
 
   const openFullscreen = (imageData: string) => {
     setFullscreenImage(imageData);
@@ -41,13 +23,20 @@ const UploadedFiles = () => {
     setFullscreenImage(null);
   };
 
-  console.log("uploadedFiles", uploadedFiles);
+  const handleDeleteAll = () => {
+    if (
+      userID &&
+      window.confirm("Are you sure you want to delete all files?")
+    ) {
+      deleteAllFiles(userID);
+    }
+  };
+
   return (
     <div className="mt-5">
-      {/* TODO: preview all despite file type  */}
       <h2 className="text-2xl font-semibold">Uploaded Files:</h2>
       <ul className="mt-3 space-y-4">
-        {uploadedFiles.map((file, index) => (
+        {files.map((file, index) => (
           <li key={file._id || index} className="flex items-center">
             {file.fileType.startsWith("image/") ? (
               <img
@@ -75,6 +64,13 @@ const UploadedFiles = () => {
           </li>
         ))}
       </ul>
+
+      <button
+        onClick={handleDeleteAll}
+        className="mt-5 text-white bg-red-500 hover:bg-red-700 py-2 px-4 rounded"
+      >
+        Delete All Files
+      </button>
 
       {fullscreenImage && (
         <FullscreenModal imageSrc={fullscreenImage} onClose={closeFullscreen} />
