@@ -80,12 +80,14 @@ const UploadedFiles: React.FC = () => {
     if (!confirmDelete) return;
 
     try {
+      console.log("user detail", userID, currentFolder);
       await axios.delete(
-        `${process.env.REACT_APP_API_URL}/api/files/delete-all`,
+        `${process.env.REACT_APP_API_URL}/api/files/delete-all/${userID}`,
         {
-          data: { userID, folderID: currentFolder || null },
+          data: { folderID: currentFolder || null },
         }
       );
+      console.log("user detail", userID, currentFolder);
       fetchData();
     } catch (error) {
       console.error("Error deleting files:", error);
