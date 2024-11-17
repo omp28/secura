@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import useAuthStore from "../store/useAuthStore";
+import PreviewModal from "./UI/PreviewModal";
 
 interface Folder {
   _id: string;
@@ -13,7 +14,10 @@ interface File {
   fileName: string;
   fileType: string;
   folderID: string | null;
-  fileData: string;
+  fileData: {
+    type: string;
+    data: number[];
+  };
 }
 
 const UploadedFiles: React.FC = () => {
@@ -23,6 +27,7 @@ const UploadedFiles: React.FC = () => {
     files: [],
   });
   const [currentFolder, setCurrentFolder] = useState<string | null>(null);
+  const [previewFile, setPreviewFile] = useState<File | null>(null);
 
   const fetchData = async () => {
     try {
@@ -141,13 +146,20 @@ const UploadedFiles: React.FC = () => {
           .filter((file) => file.folderID === parentFolderID)
           .map((file) => (
             <li key={file._id} className="flex items-center space-x-2">
-              <a
-                href={`data:${file.fileType};base64,${file.fileData}`}
-                download={file.fileName}
-                className="text-blue-600 hover:underline"
+              <span
+                className="cursor-pointer text-blue-600 hover:underline"
+                onClick={() =>
+                  setPreviewFile({
+                    _id: file._id,
+                    fileName: file.fileName,
+                    fileType: file.fileType,
+                    folderID: file.folderID,
+                    fileData: file.fileData,
+                  })
+                }
               >
                 📄 {file.fileName}
-              </a>
+              </span>
               <button
                 onClick={() => deleteFile(file._id)}
                 className="text-red-500 hover:underline ml-2"
@@ -204,6 +216,10 @@ const UploadedFiles: React.FC = () => {
       </div>
 
       <div>{renderTree(currentFolder)}</div>
+
+      {previewFile && (
+        <PreviewModal file={previewFile} onClose={() => setPreviewFile(null)} />
+      )}
     </div>
   );
 };
