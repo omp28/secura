@@ -57,16 +57,28 @@ const UploadedFiles: React.FC = () => {
     if (currentFolder) formData.append("folderID", currentFolder);
 
     try {
-      await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/files/upload`,
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/files`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       fetchData();
     } catch (error) {
       console.error("Error uploading files:", error);
+    }
+  };
+
+  const deleteFile = async (fileID: string) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this file?"
+    );
+    if (!confirmDelete) return;
+
+    try {
+      await axios.delete(
+        `${process.env.REACT_APP_API_URL}/api/files/file/${fileID}`
+      );
+      fetchData(); // Refresh the data after deletion
+    } catch (error) {
+      console.error("Error deleting file:", error);
     }
   };
 
@@ -94,6 +106,22 @@ const UploadedFiles: React.FC = () => {
     }
   };
 
+  const deleteFolder = async (folderID: string) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this folder and all its contents?"
+    );
+    if (!confirmDelete) return;
+
+    try {
+      await axios.delete(
+        `${process.env.REACT_APP_API_URL}/api/folders/${folderID}`
+      );
+      fetchData(); // Refresh the data after deletion
+    } catch (error) {
+      console.error("Error deleting folder:", error);
+    }
+  };
+
   const renderTree = (parentFolderID: string | null) => {
     return (
       <ul className="ml-4 border-l-2 pl-4 space-y-2">
@@ -107,6 +135,12 @@ const UploadedFiles: React.FC = () => {
               >
                 📁 {folder.name}
               </span>
+              <button
+                onClick={() => deleteFolder(folder._id)}
+                className="text-red-500 hover:underline ml-2"
+              >
+                🗑️ Delete
+              </button>
               {renderTree(folder._id)}
             </li>
           ))}
@@ -121,6 +155,12 @@ const UploadedFiles: React.FC = () => {
               >
                 📄 {file.fileName}
               </a>
+              <button
+                onClick={() => deleteFile(file._id)}
+                className="text-red-500 hover:underline ml-2"
+              >
+                🗑️ Delete
+              </button>
             </li>
           ))}
       </ul>
