@@ -76,33 +76,26 @@ const UploadedFiles: React.FC = () => {
       await axios.delete(
         `${process.env.REACT_APP_API_URL}/api/files/file/${fileID}`
       );
-      fetchData(); // Refresh the data after deletion
+      fetchData();
     } catch (error) {
       console.error("Error deleting file:", error);
     }
   };
 
-  const deleteAllFiles = async () => {
+  const deleteAllFilesAndFolders = async () => {
     if (!userID) return;
     const confirmDelete = window.confirm(
-      `Are you sure you want to delete all files ${
-        currentFolder ? "in this folder" : "in your account"
-      }?`
+      "Are you sure you want to delete all files and folders in your account?"
     );
     if (!confirmDelete) return;
 
     try {
-      console.log("user detail", userID, currentFolder);
       await axios.delete(
-        `${process.env.REACT_APP_API_URL}/api/files/delete-all/${userID}`,
-        {
-          data: { folderID: currentFolder || null },
-        }
+        `${process.env.REACT_APP_API_URL}/api/files/delete-all/${userID}`
       );
-      console.log("user detail", userID, currentFolder);
       fetchData();
     } catch (error) {
-      console.error("Error deleting files:", error);
+      console.error("Error deleting all files and folders:", error);
     }
   };
 
@@ -116,7 +109,7 @@ const UploadedFiles: React.FC = () => {
       await axios.delete(
         `${process.env.REACT_APP_API_URL}/api/folders/${folderID}`
       );
-      fetchData(); // Refresh the data after deletion
+      fetchData();
     } catch (error) {
       console.error("Error deleting folder:", error);
     }
@@ -203,10 +196,10 @@ const UploadedFiles: React.FC = () => {
           </button>
         )}
         <button
-          onClick={deleteAllFiles}
+          onClick={deleteAllFilesAndFolders}
           className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
         >
-          Delete All Files
+          Delete All Files and Folders
         </button>
       </div>
 
