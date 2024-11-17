@@ -138,7 +138,7 @@ const UploadedFiles: React.FC = () => {
   }, [userID]);
 
   return (
-    <div className="p-5 max-w-4xl mx-auto bg-white shadow-md rounded-lg">
+    <div className="p-5 max-w-4xl mx-auto bg-gray-900 shadow-md rounded-lg">
       <h1 className="text-2xl font-bold mb-5">File Explorer</h1>
 
       <div className="flex items-center space-x-4 mb-5">
