@@ -14,7 +14,7 @@ const Login = () => {
   const [message, setMessage] = useState<string>("");
   const navigate = useNavigate();
 
-  const { setIsAuthenticated, setUserID } = useAuthStore();
+  const { setIsAuthenticated, setUserID, setUserName } = useAuthStore();
 
   useEffect(() => {
     const storedPublicKey = localStorage.getItem("publicKey");
@@ -52,11 +52,13 @@ const Login = () => {
 
       if (response.status === 200) {
         const { token } = response.data;
+        const { username } = response.data;
         const decodedToken = jwtDecode<DecodedToken>(token);
         const userID = decodedToken.id;
 
         localStorage.setItem("securaToken", token);
         localStorage.setItem("securaUserID", userID);
+        localStorage.setItem("securaUserName", username);
 
         setIsAuthenticated(true);
         setUserID(userID);

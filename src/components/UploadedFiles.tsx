@@ -25,7 +25,7 @@ interface File {
 const highlightStyle = "bg-yellow-200";
 
 const UploadedFiles: React.FC = () => {
-  const { userID } = useAuthStore();
+  const { userID, userName } = useAuthStore();
   const [data, setData] = useState<{ folders: Folder[]; files: File[] }>({
     folders: [],
     files: [],
@@ -233,13 +233,14 @@ const UploadedFiles: React.FC = () => {
           placeholder="Search users..."
           value={searchTerm}
           onChange={handleSearch}
-          className="p-2 border rounded w-full"
+          className="p-2 border rounded w-full bg-gray-900"
         />
         <div className="w-full max-h-32 overflow-auto border p-2 rounded">
           {usernames
             .filter((username) =>
               username.toLowerCase().includes(searchTerm.toLowerCase())
             )
+            .filter((username) => username !== userName)
             .map((username) => (
               <label key={username} className="block">
                 <input
