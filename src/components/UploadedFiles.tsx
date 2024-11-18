@@ -7,6 +7,7 @@ interface Folder {
   _id: string;
   name: string;
   parentFolderID: string | null;
+  sharedWith: string[];
 }
 
 interface File {
@@ -14,11 +15,14 @@ interface File {
   fileName: string;
   fileType: string;
   folderID: string | null;
+  sharedWith: string[];
   fileData: {
     type: string;
     data: number[];
   };
 }
+
+const highlightStyle = "bg-yellow-200";
 
 const UploadedFiles: React.FC = () => {
   const { userID } = useAuthStore();
@@ -29,6 +33,10 @@ const UploadedFiles: React.FC = () => {
   const [currentFolder, setCurrentFolder] = useState<string | null>(null);
   const [previewFile, setPreviewFile] = useState<File | null>(null);
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [usernames, setUsernames] = useState<string[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+
   const fetchData = async () => {
     try {
       const response = await axios.get(
@@ -37,6 +45,32 @@ const UploadedFiles: React.FC = () => {
       setData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
+    }
+  };
+
+  const fetchUsernames = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}/api/auth/usernames`
+      );
+      setUsernames(response.data.usernames);
+    } catch (error) {
+      console.error("Error fetching usernames:", error);
+    }
+  };
+
+  const shareItem = async (type: "files" | "folders", id: string) => {
+    if (!selectedUsers.length)
+      return alert("Please select users to share with.");
+    try {
+      await axios.post(
+        `${process.env.REACT_APP_API_URL}/api/share/${type}/${id}`,
+        { sharedWith: selectedUsers }
+      );
+      alert(`${type} shared successfully`);
+      fetchData();
+    } catch (error) {
+      console.error(`Error sharing ${type}:`, error);
     }
   };
 
@@ -126,7 +160,12 @@ const UploadedFiles: React.FC = () => {
         {data.folders
           .filter((folder) => folder.parentFolderID === parentFolderID)
           .map((folder) => (
-            <li key={folder._id} className="flex items-center space-x-2">
+            <li
+              key={folder._id}
+              className={`flex items-center space-x-2 ${
+                folder.sharedWith.length > 0 ? highlightStyle : ""
+              }`}
+            >
               <span
                 className="cursor-pointer text-blue-600 hover:underline"
                 onClick={() => setCurrentFolder(folder._id)}
@@ -134,10 +173,10 @@ const UploadedFiles: React.FC = () => {
                 📁 {folder.name}
               </span>
               <button
-                onClick={() => deleteFolder(folder._id)}
-                className="text-red-500 hover:underline ml-2"
+                onClick={() => shareItem("folders", folder._id)}
+                className="text-green-500 hover:underline ml-2"
               >
-                🗑️ Delete
+                Share
               </button>
               {renderTree(folder._id)}
             </li>
@@ -145,31 +184,32 @@ const UploadedFiles: React.FC = () => {
         {data.files
           .filter((file) => file.folderID === parentFolderID)
           .map((file) => (
-            <li key={file._id} className="flex items-center space-x-2">
+            <li
+              key={file._id}
+              className={`flex items-center space-x-2 ${
+                file.sharedWith.length > 0 ? highlightStyle : ""
+              }`}
+            >
               <span
                 className="cursor-pointer text-blue-600 hover:underline"
-                onClick={() =>
-                  setPreviewFile({
-                    _id: file._id,
-                    fileName: file.fileName,
-                    fileType: file.fileType,
-                    folderID: file.folderID,
-                    fileData: file.fileData,
-                  })
-                }
+                onClick={() => setPreviewFile(file)}
               >
                 📄 {file.fileName}
               </span>
               <button
-                onClick={() => deleteFile(file._id)}
-                className="text-red-500 hover:underline ml-2"
+                onClick={() => shareItem("files", file._id)}
+                className="text-green-500 hover:underline ml-2"
               >
-                🗑️ Delete
+                Share
               </button>
             </li>
           ))}
       </ul>
     );
+  };
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
   };
 
   const navigateUp = () => {
@@ -180,11 +220,46 @@ const UploadedFiles: React.FC = () => {
 
   useEffect(() => {
     if (userID) fetchData();
+    fetchUsernames();
   }, [userID]);
 
   return (
     <div className="p-5 max-w-4xl mx-auto bg-gray-900 shadow-md rounded-lg">
       <h1 className="text-2xl font-bold mb-5">File Explorer</h1>
+
+      <div className="flex items-center space-x-4 mb-5">
+        <input
+          type="text"
+          placeholder="Search users..."
+          value={searchTerm}
+          onChange={handleSearch}
+          className="p-2 border rounded w-full"
+        />
+        <div className="w-full max-h-32 overflow-auto border p-2 rounded">
+          {usernames
+            .filter((username) =>
+              username.toLowerCase().includes(searchTerm.toLowerCase())
+            )
+            .map((username) => (
+              <label key={username} className="block">
+                <input
+                  type="checkbox"
+                  value={username}
+                  onChange={(e) => {
+                    const { checked, value } = e.target;
+                    setSelectedUsers((prev) =>
+                      checked
+                        ? [...prev, value]
+                        : prev.filter((u) => u !== value)
+                    );
+                  }}
+                  className="mr-2"
+                />
+                {username}
+              </label>
+            ))}
+        </div>
+      </div>
 
       <div className="flex items-center space-x-4 mb-5">
         <button
