@@ -1,5 +1,5 @@
 import React from "react";
-import UploadedFiles from "./UploadedFiles";
+import UploadedFiles from "./Files/UploadedFiles";
 
 const Home: React.FC = () => {
   return (
