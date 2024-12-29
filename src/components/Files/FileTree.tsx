@@ -28,6 +28,8 @@ interface FileTreeProps {
   onFolderClick: (folderId: string) => void;
   onFileClick: (file: File) => void;
   onShareItem: (type: "files" | "folders", id: string) => void;
+  onDeleteFile: (fileId: string) => void;
+  onDeleteFolder: (folderId: string) => void;
 }
 
 const highlightStyle = "bg-yellow-200";
@@ -38,6 +40,8 @@ const FileTree: React.FC<FileTreeProps> = ({
   onFolderClick,
   onFileClick,
   onShareItem,
+  onDeleteFile,
+  onDeleteFolder,
 }) => {
   return (
     <ul className="ml-4 border-l-2 pl-4 space-y-2">
@@ -62,12 +66,20 @@ const FileTree: React.FC<FileTreeProps> = ({
             >
               Share
             </button>
+            <button
+              onClick={() => onDeleteFolder(folder._id)}
+              className="text-red-500 hover:underline ml-2"
+            >
+              Delete
+            </button>
             <FileTree
               data={data}
               parentFolderID={folder._id}
               onFolderClick={onFolderClick}
               onFileClick={onFileClick}
               onShareItem={onShareItem}
+              onDeleteFile={onDeleteFile}
+              onDeleteFolder={onDeleteFolder}
             />
           </li>
         ))}
@@ -91,6 +103,12 @@ const FileTree: React.FC<FileTreeProps> = ({
               className="text-green-500 hover:underline ml-2"
             >
               Share
+            </button>
+            <button
+              onClick={() => onDeleteFile(file._id)}
+              className="text-red-500 hover:underline ml-2"
+            >
+              Delete
             </button>
           </li>
         ))}

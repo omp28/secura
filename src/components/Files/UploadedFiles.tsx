@@ -20,6 +20,8 @@ const UploadedFiles: React.FC = () => {
     shareItem,
     createFolder,
     uploadFile,
+    deleteFile,
+    deleteFolder,
     deleteAllFilesAndFolders,
     navigateUp,
   } = useFiles();
@@ -42,7 +44,6 @@ const UploadedFiles: React.FC = () => {
   return (
     <div className="p-5 max-w-4xl mx-auto bg-gray-900 shadow-md rounded-lg">
       <h1 className="text-2xl font-bold mb-5">File Explorer</h1>
-
       <FileControls
         searchTerm={searchTerm}
         usernames={usernames}
@@ -56,15 +57,15 @@ const UploadedFiles: React.FC = () => {
         onNavigateUp={navigateUp}
         onDeleteAll={deleteAllFilesAndFolders}
       />
-
       <FileTree
         data={data}
         parentFolderID={currentFolder}
         onFolderClick={setCurrentFolder}
         onFileClick={setPreviewFile}
         onShareItem={shareItem}
+        onDeleteFile={deleteFile}
+        onDeleteFolder={deleteFolder}
       />
-
       {previewFile && (
         <PreviewModal file={previewFile} onClose={() => setPreviewFile(null)} />
       )}
