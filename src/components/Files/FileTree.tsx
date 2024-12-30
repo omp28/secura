@@ -34,6 +34,14 @@ interface FileTreeProps {
 
 const highlightStyle = "bg-yellow-200";
 
+interface SharedIndicatorProps {
+  type: string;
+}
+
+const SharedIndicator: React.FC<SharedIndicatorProps> = ({ type }) => (
+  <span className="ml-2 text-xs text-blue-400">({type})</span>
+);
+
 const FileTree: React.FC<FileTreeProps> = ({
   data,
   parentFolderID,
@@ -51,15 +59,22 @@ const FileTree: React.FC<FileTreeProps> = ({
           <li
             key={folder._id}
             className={`flex items-center space-x-2 ${
-              folder.sharedWith.length > 0 ? highlightStyle : ""
+              folder.sharedWith?.length > 0 ? highlightStyle : ""
             }`}
           >
-            <span
-              className="cursor-pointer text-blue-600 hover:underline"
-              onClick={() => onFolderClick(folder._id)}
-            >
-              📁 {folder.name}
-            </span>
+            <div className="flex items-center">
+              <span
+                className="cursor-pointer text-blue-600 hover:underline"
+                onClick={() => onFolderClick(folder._id)}
+              >
+                📁 {folder.name}
+              </span>
+              {folder.sharedWith?.length > 0 && (
+                <SharedIndicator
+                  type={`Shared with ${folder.sharedWith.length}`}
+                />
+              )}
+            </div>
             <button
               onClick={() => onShareItem("folders", folder._id)}
               className="text-green-500 hover:underline ml-2"
@@ -89,15 +104,22 @@ const FileTree: React.FC<FileTreeProps> = ({
           <li
             key={file._id}
             className={`flex items-center space-x-2 ${
-              file.sharedWith.length > 0 ? highlightStyle : ""
+              file.sharedWith?.length > 0 ? highlightStyle : ""
             }`}
           >
-            <span
-              className="cursor-pointer text-blue-600 hover:underline"
-              onClick={() => onFileClick(file)}
-            >
-              📄 {file.fileName}
-            </span>
+            <div className="flex items-center">
+              <span
+                className="cursor-pointer text-blue-600 hover:underline"
+                onClick={() => onFileClick(file)}
+              >
+                📄 {file.fileName}
+              </span>
+              {file.sharedWith?.length > 0 && (
+                <SharedIndicator
+                  type={`Shared with ${file.sharedWith.length}`}
+                />
+              )}
+            </div>
             <button
               onClick={() => onShareItem("files", file._id)}
               className="text-green-500 hover:underline ml-2"

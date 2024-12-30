@@ -55,20 +55,48 @@ export const useFiles = () => {
     }
   };
 
-  const shareItem = async (type: "files" | "folders", id: string) => {
-    if (!selectedUsers.length)
-      return alert("Please select users to share with.");
-    try {
-      await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/share/${type}/${id}`,
-        { sharedWith: selectedUsers }
-      );
+const shareItem = async (type: "files" | "folders", id: string) => {
+  if (!selectedUsers.length) {
+    return alert("Please select users to share with.");
+  }
+
+  try {
+    const sharePromises = selectedUsers.map(async (userId) => {
+      console.log('Sharing', type, id, 'with user:', userId); 
+      try {
+        const response = await axios.post(
+          `${process.env.REACT_APP_API_URL}/api/share/${type}/${id}`,
+          {
+            sharedWith: userId,
+            permissions: 'read'
+          }
+        );
+        console.log('Share response:', response.data); 
+        return response.data;
+      } catch (error: any) {
+        console.error('Share error:', error.response?.data); 
+        throw new Error(`Failed to share with user ${userId}: ${error.message}`);
+      }
+    });
+
+    const results = await Promise.allSettled(sharePromises);
+    console.log('Share results:', results); 
+    
+    const failures = results.filter(r => r.status === 'rejected');
+    if (failures.length > 0) {
+      console.error('Some sharing operations failed:', failures);
+      alert(`Some sharing operations failed. Check console for details.`);
+    } else {
       alert(`${type} shared successfully`);
-      fetchData();
-    } catch (error) {
-      console.error(`Error sharing ${type}:`, error);
     }
-  };
+
+    setSelectedUsers([]);
+    fetchData();
+  } catch (error: any) {
+    console.error(`Error sharing ${type}:`, error);
+    alert(`Error sharing ${type}. Please try again.`);
+  }
+};
 
   const createFolder = async (name: string) => {
     if (!name.trim()) return;
